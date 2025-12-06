@@ -19,7 +19,7 @@ The frontend will be available at: **http://localhost:5173**
 
 ### Step 1: Navigate to Project Root
 ```bash
-cd /Users/ayyappa.juttiga/Desktop/nourish-app
+cd /Users/ayyappa.juttiga/Desktop/MAIN_IN_HOUSE_APP
 ```
 
 ### Step 2: Install Dependencies (if not already installed)

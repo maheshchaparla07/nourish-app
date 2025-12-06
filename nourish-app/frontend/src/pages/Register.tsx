@@ -144,13 +144,13 @@ export default function Register() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </div>
-        <span className="text-white text-2xl font-semibold">nourish</span>
+        <span className="text-white text-2xl font-semibold">Main</span>
       </div>
 
       {/* Register Card */}
       <div className="bg-nourish-beige-50 rounded-2xl shadow-2xl p-8 md:p-12 w-full max-w-md mx-4 z-10">
         <h1 className="text-3xl font-bold text-center mb-8 text-nourish-800">
-          nourishcare<br />
+          Main<br />
           <span className="text-xl font-normal text-nourish-gray-600">Create your account</span>
         </h1>
 

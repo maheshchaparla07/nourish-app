@@ -5,7 +5,7 @@ A full-stack digital care records platform with React frontend and FastAPI backe
 ## Project Structure
 
 ```
-nourish-app/
+MAIN_IN_HOUSE_APP/
 ├── frontend/          # React + TypeScript frontend
 │   ├── src/          # Source code
 │   ├── package.json  # Frontend dependencies

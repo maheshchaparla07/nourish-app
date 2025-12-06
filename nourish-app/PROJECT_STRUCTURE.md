@@ -3,7 +3,7 @@
 ## 📁 Complete Folder Structure
 
 ```
-nourish-app/
+MAIN_IN_HOUSE_APP/
 │
 ├── frontend/                    # React Frontend Application
 │   ├── src/

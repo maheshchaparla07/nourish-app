@@ -65,12 +65,12 @@ Your PostgreSQL data is stored in a Docker volume named `postgres_data`.
 ### View Volume:
 ```bash
 docker volume ls
-# Look for: nourish-app_postgres_data
+# Look for: MAIN_IN_HOUSE_APP_postgres_data
 ```
 
 ### Inspect Volume:
 ```bash
-docker volume inspect nourish-app_postgres_data
+docker volume inspect MAIN_IN_HOUSE_APP_postgres_data
 ```
 
 ### Location on Your Machine:
