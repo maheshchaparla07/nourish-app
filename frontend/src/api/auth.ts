@@ -212,15 +212,3 @@ export async function getAllUsers(): Promise<UsersListResponse> {
   return data as UsersListResponse;
 }
 
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    const error = data as ErrorResponse;
-    throw new Error(error.message || 'Failed to fetch users.');
-  }
-
-  return data as UsersListResponse;
-}
-
