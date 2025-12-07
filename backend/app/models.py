@@ -10,7 +10,18 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Made nullable for OAuth users
+    
+    # Microsoft OAuth fields
+    microsoft_id = Column(String, unique=True, nullable=True, index=True)
+    auth_provider = Column(String, default="local")  # 'local' or 'microsoft'
+    
+    # Profile completion fields
+    full_name = Column(String, nullable=True)
+    role = Column(String, nullable=True)
+    department = Column(String, nullable=True)
+    profile_completed = Column(Boolean, default=False)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

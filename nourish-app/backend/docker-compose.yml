@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nourish_postgres
+    environment:
+      POSTGRES_USER: nourish_user
+      POSTGRES_PASSWORD: nourish_password
+      POSTGRES_DB: nourish_db
+    ports:
+      - "5433:5432"  # Changed to 5433 to avoid conflict with existing PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nourish_user -d nourish_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: nourish_backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nourish_user:nourish_password@db:5432/nourish_db
+      - SECRET_KEY=your-secret-key-change-this-in-production-use-env-var
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

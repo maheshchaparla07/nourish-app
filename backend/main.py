@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from app.routers import auth, clients, carers
 from app.database import engine, Base
+from app.auth_middleware import verify_jwt_middleware
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -49,6 +50,9 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+# Add JWT verification middleware
+app.add_middleware(verify_jwt_middleware)
+
 # Include routers
 app.include_router(auth.router, prefix="/api", tags=["authentication"])
 app.include_router(clients.router, prefix="/api", tags=["clients"])
@@ -61,4 +65,3 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-

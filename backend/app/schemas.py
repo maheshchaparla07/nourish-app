@@ -13,11 +13,26 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
+# Microsoft OAuth schemas
+class MicrosoftAuthCallback(BaseModel):
+    code: str
+    state: str
+
+class ProfileCompletionRequest(BaseModel):
+    full_name: str
+    role: str
+    department: str
+
 # Response schemas
 class UserResponse(BaseModel):
     id: UUID
     email: str
     name: Optional[str] = None
+    full_name: Optional[str] = None
+    role: Optional[str] = None
+    department: Optional[str] = None
+    auth_provider: Optional[str] = None
+    profile_completed: bool = False
     created_at: Optional[datetime] = None
 
     class Config:
@@ -30,10 +45,19 @@ class UsersListResponse(BaseModel):
 class LoginResponse(BaseModel):
     token: str
     user: UserResponse
+    profile_completed: bool = True
 
 class RegisterResponse(BaseModel):
     token: str
     user: UserResponse
+
+class MicrosoftLoginResponse(BaseModel):
+    authorization_url: str
+
+class ProfileCompletionResponse(BaseModel):
+    token: str
+    user: UserResponse
+    message: str
 
 class ErrorResponse(BaseModel):
     message: str

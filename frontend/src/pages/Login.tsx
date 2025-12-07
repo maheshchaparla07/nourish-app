@@ -1,10 +1,12 @@
-import { useState, FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, FormEvent, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { loginUser } from '../api/auth';
+import { loginUser, getMicrosoftLoginUrl, handleMicrosoftCallback } from '../api/auth';
+import ProfileCompletion from '../components/ProfileCompletion';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +15,45 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [profileCompletion, setProfileCompletion] = useState<{
+    show: boolean;
+    token: string;
+    email: string;
+  }>({ show: false, token: '', email: '' });
+
+  // Handle Microsoft OAuth callback
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+
+    if (code && state) {
+      handleMicrosoftOAuthCallback(code, state);
+    }
+  }, [searchParams]);
+
+  const handleMicrosoftOAuthCallback = async (code: string, state: string) => {
+    setLoading(true);
+    try {
+      const response = await handleMicrosoftCallback(code, state);
+      
+      // If profile not completed, show profile completion form
+      if (!response.profile_completed) {
+        setProfileCompletion({
+          show: true,
+          token: response.token,
+          email: response.user.email,
+        });
+      } else {
+        localStorage.setItem('auth_token', response.token);
+        login(response.token, response.user);
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Microsoft login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -53,6 +94,29 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const handleMicrosoftLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getMicrosoftLoginUrl();
+      // Redirect to Microsoft login
+      window.location.href = response.authorization_url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to initiate Microsoft login');
+      setLoading(false);
+    }
+  };
+
+  // Show profile completion form if needed
+  if (profileCompletion.show) {
+    return (
+      <ProfileCompletion
+        token={profileCompletion.token}
+        userEmail={profileCompletion.email}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-nourish-400 via-nourish-500 to-nourish-600 flex flex-col items-center justify-center relative overflow-hidden">
@@ -255,7 +319,9 @@ export default function Login() {
           {/* Microsoft Sign In Button */}
           <button
             type="button"
-            className="w-full bg-white border-2 border-nourish-gray-200 text-nourish-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-nourish-gray-50 focus:outline-none focus:ring-2 focus:ring-nourish-500 focus:ring-offset-2 transition flex items-center justify-center gap-3"
+            onClick={handleMicrosoftLogin}
+            disabled={loading}
+            className="w-full bg-white border-2 border-nourish-gray-200 text-nourish-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-nourish-gray-50 focus:outline-none focus:ring-2 focus:ring-nourish-500 focus:ring-offset-2 transition flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 23 23" fill="none">
               <rect x="0" y="0" width="11" height="11" fill="#F25022" />
@@ -263,7 +329,7 @@ export default function Login() {
               <rect x="0" y="12" width="11" height="11" fill="#00A4EF" />
               <rect x="12" y="12" width="11" height="11" fill="#FFB900" />
             </svg>
-            Sign in with Microsoft
+            {loading ? 'Signing in with Microsoft...' : 'Sign in with Microsoft'}
           </button>
         </form>
       </div>
